@@ -10,23 +10,28 @@ function Profile() {
     const dispatch = useDispatch()
 
     const [formErrors, setFormErrors] = useState({ firstName: "", lastName: "", age: "", email: "", password: "", contactNumber: "" })
-
+    const [submitError, setSubmitError] = useState(false)
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const request = { ...user }
-        await postUser(request)
-        // const { firstName, lastName, age, email, password, contactNumber } = formErrors
-        // if (formErrors.firstName === formErrors.lastName
-        //     === formErrors.age === formErrors.email
-        //     === formErrors.password === formErrors.contactNumber === "") {
+        console.log(formErrors)
+        if (formErrors.firstName === "" &&
+            formErrors.lastName === "" &&
+            formErrors.age === "" &&
+            formErrors.email === "" &&
+            formErrors.password === "" &&
+            formErrors.contactNumber === "") {
 
-            
-        // }
+            const request = { ...user }
+            await postUser(request)
+        } else {
+            setSubmitError(true)
+        }
     }
 
     const handleChange = (e) => {
         const { name, value, required } = e.target
         dispatch(updateFormData({ ...user, [name]: value }))
+        setSubmitError(false)
         validate([name], value, required)
     }
 
@@ -47,7 +52,7 @@ function Profile() {
         const phoneRegex = /^[0-9]{10}$/i;
 
         console.log(name, value.length, required)
-        if ([name] == 'age') {
+        if ([name] === 'age') {
             if (value.length === 0 && required === true) {
                 setFormErrors({ ...formErrors, [name]: "Age is required!" })
             } else if (value <= 1 || value >= 100) {
@@ -58,7 +63,7 @@ function Profile() {
             }
         }
 
-        if ([name] == 'email') {
+        if ([name] === 'email') {
             if (value.length === 0 && required === true) {
                 setFormErrors({ ...formErrors, [name]: "Email-ID is required!" })
             } else if (!emailRegex.test(value)) {
@@ -69,7 +74,7 @@ function Profile() {
             }
         }
 
-        if ([name] == 'password') {
+        if ([name] === 'password') {
             if (value.length === 0 && required === true) {
                 setFormErrors({ ...formErrors, [name]: "Password is required!" })
             } else if (value.length < 5) {
@@ -82,7 +87,7 @@ function Profile() {
             }
         }
 
-        if ([name] == 'contactNumber') {
+        if ([name] === 'contactNumber') {
             if (value.length === 0 && required === true) {
                 setFormErrors({ ...formErrors, [name]: "Contact Number is required!" })
             } else if (!phoneRegex.test(value)) {
@@ -173,6 +178,7 @@ function Profile() {
 
                     <div>
                         <Button type="submit" variant="contained">Submit</Button>
+                        <p>{submitError && "Please follow the instructions!"}</p>
                     </div>
                 </form>
             </Container>
