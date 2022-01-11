@@ -15,12 +15,19 @@ function Profile() {
         e.preventDefault();
         const request = { ...user }
         await postUser(request)
+        // const { firstName, lastName, age, email, password, contactNumber } = formErrors
+        // if (formErrors.firstName === formErrors.lastName
+        //     === formErrors.age === formErrors.email
+        //     === formErrors.password === formErrors.contactNumber === "") {
+
+            
+        // }
     }
 
     const handleChange = (e) => {
-        const { name, value } = e.target
+        const { name, value, required } = e.target
         dispatch(updateFormData({ ...user, [name]: value }))
-        validate([name], value)
+        validate([name], value, required)
     }
 
     const postUser = async (request) => {
@@ -33,30 +40,58 @@ function Profile() {
         console.log(response);
     }
 
-    const validate = (name, value) => {
+    const validate = (name, value, required) => {
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/i;
+        const phoneRegex = /^[0-9]{10}$/i;
 
-
-        //age check
-        if ([name] == 'age' && (value <= 1 || value >= 100)) {
-            const res = { ...formErrors, [name]: "Invalid Age" }
-            setFormErrors(res)
-        } else {
-            setFormErrors({ ...formErrors, [name]: "" })
+        console.log(name, value.length, required)
+        if ([name] == 'age') {
+            if (value.length === 0 && required === true) {
+                setFormErrors({ ...formErrors, [name]: "Age is required!" })
+            } else if (value <= 1 || value >= 100) {
+                const res = { ...formErrors, [name]: "Invalid Age" }
+                setFormErrors(res)
+            } else {
+                setFormErrors({ ...formErrors, [name]: "" })
+            }
         }
 
-        //email check
-        if ([name] == 'email' && !emailRegex.test(value)) {
-            const res = { ...formErrors, [name]: "Invalid Email Address" }
-            setFormErrors(res)
-        } else {
-            setFormErrors({ ...formErrors, [name]: "" })
+        if ([name] == 'email') {
+            if (value.length === 0 && required === true) {
+                setFormErrors({ ...formErrors, [name]: "Email-ID is required!" })
+            } else if (!emailRegex.test(value)) {
+                const res = { ...formErrors, [name]: "Invalid Email-ID" }
+                setFormErrors(res)
+            } else {
+                setFormErrors({ ...formErrors, [name]: "" })
+            }
         }
-        //only the bottom one is functional, 'email' in this case.
-        //if 'age' check is cut-pasted below 'email' check, then 'age' check
-        //would be done but not email and vice versa.
+
+        if ([name] == 'password') {
+            if (value.length === 0 && required === true) {
+                setFormErrors({ ...formErrors, [name]: "Password is required!" })
+            } else if (value.length < 5) {
+                setFormErrors({ ...formErrors, [name]: "Use a stronger password!" })
+            } else if (!passwordRegex.test(value)) {
+                const res = { ...formErrors, [name]: "Password should contain atleast one a-z, A-Z, number, and a special character" }
+                setFormErrors(res)
+            } else {
+                setFormErrors({ ...formErrors, [name]: "" })
+            }
+        }
+
+        if ([name] == 'contactNumber') {
+            if (value.length === 0 && required === true) {
+                setFormErrors({ ...formErrors, [name]: "Contact Number is required!" })
+            } else if (!phoneRegex.test(value)) {
+                const res = { ...formErrors, [name]: "Invalid Contact Number" }
+                setFormErrors(res)
+            } else {
+                setFormErrors({ ...formErrors, [name]: "" })
+            }
+        }
     }
 
     useEffect(() => {
